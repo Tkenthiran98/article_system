@@ -1,7 +1,10 @@
 <?php
 
+// routes/web.php
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\Auth\LoginController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,11 +20,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Admin Dashboard Route (only accessible to admin users)
+Route::middleware(['admin'])->prefix('admin')->group(function () {
+    Route::get('home', [LoginController::class, 'index'])->name('admin.home');
+    });
+
 require __DIR__.'/auth.php';
-
-   // Admin Dashboard Route (only accessible to admin users)
-   Route::middleware(['admin'])->prefix('admin')->group(function () {
- });
-
 require __DIR__.'/admin-auth.php';
-

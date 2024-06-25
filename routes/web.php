@@ -1,14 +1,12 @@
 <?php
 
-// routes/web.php
-
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Auth\LoginController;
+use App\Http\Controllers\ArticleController;
+use Illuminate\Support\Facades\Auth;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [ArticleController::class, 'publicArticles'])->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -20,10 +18,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Auth::routes();
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+});
+
 // Admin Dashboard Route (only accessible to admin users)
 Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('home', [LoginController::class, 'index'])->name('admin.home');
-    });
+});
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin-auth.php';
